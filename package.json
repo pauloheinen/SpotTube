@@ -1,0 +1,24 @@
+{
+  "name": "spottube",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "request": "^2.88.2",
+    "xhr2": "^0.2.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "xhr2": "*",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
