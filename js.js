@@ -25,14 +25,40 @@ document.querySelector('#playlistBTN').addEventListener('click', function () {
 
 document.querySelector('#playlistDIV').addEventListener('click', function (c) {
 
-    if (c.target.id !== 'playlistBTN')
-        spotify_add_playlist(c.target.id, trackID);
+    if (c.target.id !== 'playlistBTN') {
+        let playlistHAS = spotify_playlist_has_track(c.target.id);
+        if (playlistHAS === false)
+            spotify_add_playlist(c.target.id, trackID);
+        else{
+            let answer = window.confirm('You already have this music added in this playlist. Want to add it anyway?');
+            if (answer)
+                spotify_add_playlist(c.target.id, trackID);
+        }
 
-    window.close();
+    }
+
+    //window.close();
 });
 
+function spotify_playlist_has_track(playlistID) {
+
+    // response receives a list of current user actual clicked playlist tracks
+    let response = spotify_get_request('https://api.spotify.com/v1/playlists/' + playlistID + '/tracks');
+    let tracksLIST = response['items'];
+    for (let i = 0; i < tracksLIST.length; i++) {
+        if (tracksLIST[i]['track']['id'] === trackID){
+            console.log("found!")
+            return true;
+        }
+    }
+    return false;
+
+}
+
 // creates a list of playlists from user Spotify account
-function html_append_playlist() {
+// hasID ** boolean, if the playlist clicked already has the track
+// playlistCLICKED ** number, if the for() loop ran till the user playlist clicked
+function html_append_playlist(hasID, playlistCLICKED) {
 
     // returns playlists
     let data = spotify_playlist_me();
@@ -43,15 +69,15 @@ function html_append_playlist() {
 
     // fill the children of a div with playlist's names
     for (let i = 0; i < data['items'].length; i++) {
-        console.log(data)
-        // owner = items[i][owner][display_name];
-        let itemNAME = items[i]['name'];
-        let playlistID = items[i]['id'];
-        //spotifyd may return None
-
         // create <a> tags and add them in div parent
         let a = document.createElement('a');
-        a.innerHTML = `<a id=${playlistID} href="" ">${itemNAME}</a><br/>`
+        let itemNAME = items[i]['name'];
+        let playlistID = items[i]['id'];
+
+        if (hasID === true && playlistID === playlistCLICKED)
+            a.innerText = `<a id=${playlistID} href="" ">${itemNAME}</a> 'Already has this track'<br/>`
+        else
+            a.innerHTML = `<a id=${playlistID} href="" ">${itemNAME}</a><br/>`
         d.appendChild(a);
     }
 
@@ -182,12 +208,10 @@ function spotify_check_token() {
 
         // if the app hasn't been opened or the browser got its cache cleaned
         if (data.expires_at === undefined) {
-            console.log(1)
             spotify_auth();
         }
         // else it only needs a new refresh token 'cause its actual got expired
         else if (data.expires_at < time_is_now()) {
-            console.log(2)
             refresh_token();
         }
         html_append_playlist();
@@ -196,14 +220,22 @@ function spotify_check_token() {
 
 }
 
-// a GET request to Spotify current user playlists endpoint to retrieve list of playlists
-function spotify_playlist_me() {
 
-    HTTP.open('GET', 'https://api.spotify.com/v1/me/playlists', false);
+// Standard GET request to Spotify API endpoint
+function spotify_get_request(urlto){
+
+    HTTP.open('GET', urlto, false);
     HTTP.setRequestHeader('Authorization', 'Bearer ' + ACCESS_TOKEN);
     HTTP.send();
     let data = HTTP.response;
     return JSON.parse(data);
+
+}
+
+// a GET request to Spotify current user playlists endpoint to retrieve list of playlists
+function spotify_playlist_me() {
+
+    return spotify_get_request('https://api.spotify.com/v1/me/playlists');
 
 }
 
@@ -273,17 +305,15 @@ function time_is_now(){
 
 
 /* ----------- MAIN ----------- */
-// this function get chrome tabs as a function
-chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
+function main(url) {
 
-    // the actual url
-    let url = tabs[0].url;
 
     // verifies if the actual tab is a Youtube video page
     if (!url.valueOf().toString().includes("https://www.youtube.com/watch?"))
         document.getElementById("playlistDIV").innerText = "Invalid URL!";
     // if is a youtube tab
     else {
+
         // musicNAME receives a name from youtube's content
         let musicNAME = youtube_get_name(url);
 
@@ -292,12 +322,15 @@ chrome.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
 
         // if returned a value for Spotify track ID
         if (trackID !== undefined && trackID !== 'None') {
+
+
             // shows up a button to call user playlists
             document.getElementById('playlistBTN').removeAttribute('hidden');
             spotify_embed();
-        }
-        else
+
+
+        } else
             document.getElementById("playlistDIV").innerText = "Content not found or invalid URl!";
     }
 
-});
+}
