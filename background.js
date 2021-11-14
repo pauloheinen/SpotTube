@@ -9,14 +9,11 @@ window.onload = function () {
                 }
         });
 }
-// after execution, this is closing itself
-// how to keep that open?
 
-/*
-while !== musica adicionada{
-    keep running code?
-    if clickout send message window.close()
-}
- */
+// how to check the tab even if the extension is closed
+// this could improve the performance
+// let the page done with search and requests to when i click i wouldnt need to wait
+
+
 
 

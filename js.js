@@ -37,28 +37,14 @@ document.querySelector('#playlistDIV').addEventListener('click', function (c) {
 
     }
 
-    //window.close();
+    window.close();
 });
 
-function spotify_playlist_has_track(playlistID) {
-
-    // response receives a list of current user actual clicked playlist tracks
-    let response = spotify_get_request('https://api.spotify.com/v1/playlists/' + playlistID + '/tracks');
-    let tracksLIST = response['items'];
-    for (let i = 0; i < tracksLIST.length; i++) {
-        if (tracksLIST[i]['track']['id'] === trackID){
-            console.log("found!")
-            return true;
-        }
-    }
-    return false;
-
-}
 
 // creates a list of playlists from user Spotify account
 // hasID ** boolean, if the playlist clicked already has the track
 // playlistCLICKED ** number, if the for() loop ran till the user playlist clicked
-function html_append_playlist(hasID, playlistCLICKED) {
+function html_append_playlist() {
 
     // returns playlists
     let data = spotify_playlist_me();
@@ -73,11 +59,7 @@ function html_append_playlist(hasID, playlistCLICKED) {
         let a = document.createElement('a');
         let itemNAME = items[i]['name'];
         let playlistID = items[i]['id'];
-
-        if (hasID === true && playlistID === playlistCLICKED)
-            a.innerText = `<a id=${playlistID} href="" ">${itemNAME}</a> 'Already has this track'<br/>`
-        else
-            a.innerHTML = `<a id=${playlistID} href="" ">${itemNAME}</a><br/>`
+        a.innerHTML = `<a id=${playlistID} href="" ">${itemNAME}</a><br/>`
         d.appendChild(a);
     }
 
@@ -220,7 +202,6 @@ function spotify_check_token() {
 
 }
 
-
 // Standard GET request to Spotify API endpoint
 function spotify_get_request(urlto){
 
@@ -243,6 +224,22 @@ function spotify_playlist_me() {
 function spotify_get_trackid(musicNAME){
 
     trackID = request_get(BASEURL + 'scrap/' + musicNAME);
+
+}
+
+// check if the current user has a track in his playlist
+function spotify_playlist_has_track(playlistID) {
+
+    // response receives a list of actual clicked playlist tracks
+    let response = spotify_get_request('https://api.spotify.com/v1/playlists/' + playlistID + '/tracks');
+    let tracksLIST = response['items'];
+    for (let i = 0; i < tracksLIST.length; i++) {
+        if (tracksLIST[i]['track']['id'] === trackID){
+            console.log("found!")
+            return true;
+        }
+    }
+    return false;
 
 }
 
@@ -323,11 +320,9 @@ function main(url) {
         // if returned a value for Spotify track ID
         if (trackID !== undefined && trackID !== 'None') {
 
-
             // shows up a button to call user playlists
             document.getElementById('playlistBTN').removeAttribute('hidden');
             spotify_embed();
-
 
         } else
             document.getElementById("playlistDIV").innerText = "Content not found or invalid URl!";
