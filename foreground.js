@@ -4,7 +4,7 @@ let DATE = new Date();
 
 const CLIENT_SECRET = '';
 const CLIENT_ID = '';
-const SCOPE = ['user-library-read', 'playlist-modify-private', 'playlist-modify-public'];
+const SCOPE = ['user-private-read', 'playlist-modify-private', 'playlist-modify-public'];
 const BASEURL = 'https://flask-chrome-extension.herokuapp.com/';
 const redirectUri = chrome.identity.getRedirectURL();
 
@@ -304,12 +304,12 @@ function time_is_now(){
 /* ----------- MAIN ----------- */
 function main(url) {
 
-
     // verifies if the actual tab is a Youtube video page
     if (!url.valueOf().toString().includes("https://www.youtube.com/watch?"))
         document.getElementById("playlistDIV").innerText = "Invalid URL!";
     // if is a youtube tab
     else {
+        console.log("got in")
 
         // musicNAME receives a name from youtube's content
         let musicNAME = youtube_get_name(url);
@@ -324,7 +324,8 @@ function main(url) {
             document.getElementById('playlistBTN').removeAttribute('hidden');
             spotify_embed();
 
-        } else
+        }
+        else
             document.getElementById("playlistDIV").innerText = "Content not found or invalid URl!";
     }
 
