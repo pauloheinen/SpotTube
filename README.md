@@ -9,7 +9,7 @@ an embed of the item searched and a button to call your playlists
 
 ![img.png](img.png)
 
-After call the playlists the user have the playlists
+After click the "call playlists" button, the app shows the playlists the user have
 
 ![img_1.png](img_1.png)
 
