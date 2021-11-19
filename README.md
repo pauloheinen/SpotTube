@@ -10,6 +10,7 @@ an embed of the item searched and a button to call your playlists
 ![img.png](img.png)
 
 After call the playlists the user have the playlists
+
 ![img_1.png](img_1.png)
 
 And then, finally, if I click into some link we got the item added into our playlists.
